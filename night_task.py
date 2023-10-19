@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 from pytz import timezone
 
 from chain_collection.mod10_xt import xt_chain
+from chain_collection.mod11_bit_get import bit_get_chain
 from config.logger_config import setup_logger
 from database.db_pool import get_connection, release_connection
 from symbols_collection.mod10_bybit import bybit
@@ -312,6 +313,7 @@ def update_chain():
     bing_x_chain()
     ku_coin_chain()
     xt_chain()
+    bit_get_chain()
 
     # okx
     cursor.execute("UPDATE chain SET chain = split_part(chain, '-', 2) WHERE exchange_name = 'okx'")
