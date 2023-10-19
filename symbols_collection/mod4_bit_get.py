@@ -11,27 +11,7 @@ logger = setup_logger("bit_get", os.path.join(project_root, 'log', 'app.log'))
 
 
 def bit_get():
-    url = "https://api.bitget.com/api/mix/v1/market/tickers?productType=umcbl"
-    response = requests.get(url)
-
-    if response.status_code == 200:
-        data = response.json()
-        data = data['data']
-        insert_to_db(data, reference)
-    else:
-        logger.error(f"Request failed with status code {response.status_code}")
-
-    url = "https://api.bitget.com/api/mix/v1/market/tickers?productType=dmcbl"
-    response = requests.get(url)
-
-    if response.status_code == 200:
-        data = response.json()
-        data = data['data']
-        insert_to_db(data, reference)
-    else:
-        logger.error(f"Request failed with status code {response.status_code}")
-
-    url = "https://api.bitget.com/api/mix/v1/market/tickers?productType=cmcbl"
+    url = "https://api.bitget.com/api/spot/v1/market/tickers"
     response = requests.get(url)
 
     if response.status_code == 200:
@@ -63,7 +43,7 @@ def transform_and_filter_symbols(data, ref):
     unmatched_symbols = []
 
     for item in data:
-        symbol = str(item['symbol']).split('_')[0]
+        symbol = item['symbol']
         found = False
         for match in ref:
             if symbol.endswith(match):
