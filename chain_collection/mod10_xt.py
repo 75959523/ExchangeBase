@@ -37,5 +37,3 @@ def insert_to_db(result):
     connection.commit()
     cursor.close()
     release_connection(connection)
-
-xt_chain()
