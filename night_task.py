@@ -8,6 +8,7 @@ from pytz import timezone
 
 from chain_collection.mod10_xt import xt_chain
 from chain_collection.mod11_bit_get import bit_get_chain
+from chain_collection.mod12_bybit import bybit_chain
 from config.logger_config import setup_logger
 from database.db_pool import get_connection, release_connection
 from symbols_collection.mod10_bybit import bybit
@@ -314,12 +315,14 @@ def update_chain():
     ku_coin_chain()
     xt_chain()
     bit_get_chain()
+    bybit_chain()
 
     # okx
     cursor.execute("UPDATE chain SET chain = split_part(chain, '-', 2) WHERE exchange_name = 'okx'")
-    # binanceTron (TRC20)
+    cursor.execute("UPDATE chain SET chain = 'BEP20' WHERE chain = 'BSC' AND exchange_name = 'okx'")
+    # binance
     cursor.execute(
-        "UPDATE chain SET chain = 'BEP2' WHERE chain = 'BNB Beacon Chain (BEP2)' AND exchange_name = 'binance'")
+        "UPDATE chain SET chain = 'BEP20' WHERE chain = 'BNB Beacon Chain (BEP2)' AND exchange_name = 'binance'")
     cursor.execute(
         "UPDATE chain SET chain = 'BEP20' WHERE chain = 'BNB Smart Chain (BEP20)' AND exchange_name = 'binance'")
     cursor.execute("UPDATE chain SET chain = 'ERC20' WHERE chain = 'Ethereum (ERC20)' AND exchange_name = 'binance'")
@@ -334,9 +337,14 @@ def update_chain():
     cursor.execute("DELETE FROM chain WHERE chain = '' AND exchange_name = 'digifinex'")
     # xt
     cursor.execute(
-        "UPDATE chain SET chain = 'BEP' WHERE chain = 'BNB Smart Chain' AND exchange_name = 'xt'")
+        "UPDATE chain SET chain = 'BEP20' WHERE chain = 'BNB Smart Chain' AND exchange_name = 'xt'")
     cursor.execute(
         "UPDATE chain SET chain = 'ERC20' WHERE chain = 'Ethereum' AND exchange_name = 'xt'")
+    # bybit
+    cursor.execute(
+        "UPDATE chain SET chain = 'BEP20' WHERE chain = 'BSC' AND exchange_name = 'bybit'")
+    cursor.execute(
+        "UPDATE chain SET chain = 'ERC20' WHERE chain = 'ETH' AND exchange_name = 'bybit'")
 
     connection.commit()
     cursor.close()
