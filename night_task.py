@@ -317,6 +317,7 @@ def update_chain():
     xt_chain()
     bit_get_chain()
     bybit_chain()
+    poloniex_chain()
 
     # okx
     cursor.execute("UPDATE chain SET chain = split_part(chain, '-', 2) WHERE exchange_name = 'okx'")
