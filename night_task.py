@@ -9,6 +9,7 @@ from pytz import timezone
 from chain_collection.mod10_xt import xt_chain
 from chain_collection.mod11_bit_get import bit_get_chain
 from chain_collection.mod12_bybit import bybit_chain
+from chain_collection.mod13_poloniex import poloniex_chain
 from config.logger_config import setup_logger
 from database.db_pool import get_connection, release_connection
 from symbols_collection.mod10_bybit import bybit
@@ -174,7 +175,7 @@ def update_symbols():
         bing_x()
         probit()
         kraken()
-        ku_coin()
+        # ku_coin()
         poloniex()
 
         patterns_to_delete = [
@@ -312,39 +313,42 @@ def update_chain():
     gate_io_chain()
     digi_finex_chain()
     bing_x_chain()
-    ku_coin_chain()
+    # ku_coin_chain()
     xt_chain()
     bit_get_chain()
     bybit_chain()
 
     # okx
     cursor.execute("UPDATE chain SET chain = split_part(chain, '-', 2) WHERE exchange_name = 'okx'")
-    cursor.execute("UPDATE chain SET chain = 'BEP20' WHERE chain = 'BSC' AND exchange_name = 'okx'")
-    # binance
-    cursor.execute(
-        "UPDATE chain SET chain = 'BEP20' WHERE chain = 'BNB Beacon Chain (BEP2)' AND exchange_name = 'binance'")
-    cursor.execute(
-        "UPDATE chain SET chain = 'BEP20' WHERE chain = 'BNB Smart Chain (BEP20)' AND exchange_name = 'binance'")
-    cursor.execute("UPDATE chain SET chain = 'ERC20' WHERE chain = 'Ethereum (ERC20)' AND exchange_name = 'binance'")
-    cursor.execute(
-        "UPDATE chain SET chain = 'TRC20' WHERE chain = 'Tron (TRC20)' AND exchange_name = 'binance'")
-    # mexc
-    cursor.execute("UPDATE chain SET chain = 'BEP20' WHERE chain = 'BEP20(BSC)' AND exchange_name = 'mexc'")
-    # gateio
-    cursor.execute("UPDATE chain SET chain = 'ERC20' WHERE chain = 'ETH/ERC20' AND exchange_name = 'gateio'")
-    cursor.execute("UPDATE chain SET chain = 'BEP20' WHERE chain = 'BSC/BEP20' AND exchange_name = 'gateio'")
     # digifinex
     cursor.execute("DELETE FROM chain WHERE chain = '' AND exchange_name = 'digifinex'")
-    # xt
+
     cursor.execute(
-        "UPDATE chain SET chain = 'BEP20' WHERE chain = 'BNB Smart Chain' AND exchange_name = 'xt'")
+        "UPDATE chain SET chain = 'BEP20' WHERE chain IN ('BSC', 'BNB Beacon Chain (BEP2)', 'BNB Smart Chain (BEP20)', 'BNB Smart Chain', 'BNB-BEP2', 'BEP20(BSC)', 'BSC(BEP20)', 'BSC/BEP20', 'BSC(RACAV2)', 'BSC(BEP20)', 'BNB-BEP2', 'BNB/BEP2', 'BNB')")
     cursor.execute(
-        "UPDATE chain SET chain = 'ERC20' WHERE chain = 'Ethereum' AND exchange_name = 'xt'")
-    # bybit
+        "UPDATE chain SET chain = 'ERC20' WHERE chain IN ('Ethereum (ERC20)', 'Ethereum', 'ETH/ERC20', 'ETH', 'Ethereum Classic', 'GRC20', 'CRC20', 'HRC20', 'NRC20', 'ARC20', 'ETHS', 'ETRC20', 'HRC20ETH', 'ARC20USDT', 'Ethereum (Proof-of-Work)', 'ETHF', 'ETHW', 'ETH2', 'ETHFAIR', 'Etherscan', 'ETHS', 'PETH')")
+    cursor.execute("UPDATE chain SET chain = 'TRC20' WHERE chain IN ('TRON', 'TRX', 'TRC10', 'Tron (TRC20)')")
     cursor.execute(
-        "UPDATE chain SET chain = 'BEP20' WHERE chain = 'BSC' AND exchange_name = 'bybit'")
+        "UPDATE chain SET chain = 'EVM' WHERE chain IN ('TENETEVM', 'SFLEVM', 'FRA(EVM)', 'VLX(EVM)', 'ASTAREVM', 'POINTEVM', 'FIBO', 'FEVM', 'PLBEVM', 'REBUSEVM', 'TELOS(EVM)', 'SysNEVM')")
     cursor.execute(
-        "UPDATE chain SET chain = 'ERC20' WHERE chain = 'ETH' AND exchange_name = 'bybit'")
+        "UPDATE chain SET chain = 'Avalanche' WHERE chain IN ('CAVAX', 'CCHAIN', 'AVAX C-Chain', 'AVAX-CCHAIN', 'Avalanche C')")
+    cursor.execute(
+        "UPDATE chain SET chain = 'Chiliz' WHERE chain IN ('CHZ', 'Chiliz', 'chz', 'CHZ20', 'Chiliz Chain(CHZ)', 'Chiliz Legacy Chain', 'ChilizLegacyChain', 'Chiliz Legacy Chain(CHZ)')")
+    cursor.execute("UPDATE chain SET chain = 'Neo' WHERE chain IN ('Neo Legacy', 'N3', 'NEO', 'Neo N3')")
+    cursor.execute("UPDATE chain SET chain = 'Harmony' WHERE chain IN ('Harmony/HRC20', 'Harmony')")
+    cursor.execute("UPDATE chain SET chain = 'Osmosis' WHERE chain IN ('Osmosis', 'OSMO')")
+    cursor.execute(
+        "UPDATE chain SET chain = 'Bitcoin' WHERE chain IN ('BTC', 'Bitcoin SV', 'Bitcoin', 'BTC(SegWit)')")
+    cursor.execute("UPDATE chain SET chain = 'Bifrost' WHERE chain IN ('Bifrost-Polkadot', 'BIFROSTKUSAMA')")
+    cursor.execute(
+        "UPDATE chain SET chain = 'zkSync' WHERE chain IN ('ZKSYNCERA', 'zkSync Lite(v1)', 'zkSync Era')")
+    cursor.execute("UPDATE chain SET chain = 'Dog' WHERE chain IN ('DOG20', 'DogeChain', 'Dogechain')")
+    cursor.execute(
+        "UPDATE chain SET chain = 'Arbitrum' WHERE chain IN ('Arbitrum-One', 'Arbitrum Nova', 'Arbitrum One (Bridged)')")
+    cursor.execute("UPDATE chain SET chain = 'Freeton' WHERE chain IN ('FREETON', 'Ton', 'TON')")
+    cursor.execute("UPDATE chain SET chain = 'Optimism' WHERE chain IN ('VELODROME(V2)-Optimism', 'Optimism (Bridged)', 'Optimism (V2)', 'OPTIMISM', 'Optimism (Circle)')")
+    cursor.execute("UPDATE chain SET chain = 'Arbitrum One' WHERE chain IN ('ARBITRUMONE', 'ARBITRUM', 'Arbitrum', 'ArbitrumOne', 'ARBITRUMETH', 'ArbitrumNova', 'Arbitrum-One', 'Arbitrum Nova', 'ArbitrumNova', 'Arbitrum One(Bridged)', 'Arbitrum One (Bridged)', 'Arbitrum One (Circle)')")
+    cursor.execute("UPDATE chain SET chain = 'Polygon' WHERE chain IN ('POLYGON', 'Polygon (Bridged)', 'Polygon (Circle)')")
 
     connection.commit()
     cursor.close()
