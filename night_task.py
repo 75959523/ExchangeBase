@@ -11,6 +11,7 @@ from chain_collection.mod11_bit_get import bit_get_chain
 from chain_collection.mod12_bybit import bybit_chain
 from chain_collection.mod13_poloniex import poloniex_chain
 from chain_collection.mod14_ascend_ex import ascend_ex_chain
+from chain_collection.mod9_l_bank import l_bank_chain
 from config.logger_config import setup_logger
 from database.db_pool import get_connection, release_connection
 from symbols_collection.mod10_bybit import bybit
@@ -320,6 +321,7 @@ def update_chain():
     bybit_chain()
     poloniex_chain()
     ascend_ex_chain()
+    l_bank_chain()
 
     # okx
     cursor.execute("UPDATE chain SET chain = split_part(chain, '-', 2) WHERE exchange_name = 'okx'")
@@ -327,9 +329,9 @@ def update_chain():
     cursor.execute("DELETE FROM chain WHERE chain = '' AND exchange_name = 'digifinex'")
 
     cursor.execute(
-        "UPDATE chain SET chain = 'BEP20' WHERE chain IN ('BSC', 'BNB Beacon Chain (BEP2)', 'BNB Smart Chain (BEP20)', 'BNB Smart Chain', 'BNB-BEP2', 'BEP20(BSC)', 'BEP20 (BSC)', 'BSC(BEP20)', 'BSC/BEP20', 'BSC(RACAV2)', 'BSC(BEP20)', 'BNB-BEP2', 'BNB/BEP2', 'BNB')")
+        "UPDATE chain SET chain = 'BEP20' WHERE chain IN ('BSC', 'BNB Beacon Chain (BEP2)', 'BNB Smart Chain (BEP20)', 'BNB Smart Chain', 'BNB-BEP2', 'BEP20(BSC)', 'BEP20 (BSC)', 'BSC(BEP20)', 'BSC/BEP20', 'BSC(RACAV2)', 'BSC(BEP20)', 'BNB-BEP2', 'BNB/BEP2', 'BNB', 'bep20(bsc)')")
     cursor.execute(
-        "UPDATE chain SET chain = 'ERC20' WHERE chain IN ('Ethereum (ERC20)', 'Ethereum', 'ETH/ERC20', 'ETH', 'Ethereum Classic', 'GRC20', 'CRC20', 'HRC20', 'NRC20', 'ARC20', 'ETHS', 'ETRC20', 'HRC20ETH', 'ARC20USDT', 'Ethereum (Proof-of-Work)', 'ETHF', 'ETHW', 'ETH2', 'ETHFAIR', 'Etherscan', 'ETHS', 'PETH')")
+        "UPDATE chain SET chain = 'ERC20' WHERE chain IN ('Ethereum (ERC20)', 'Ethereum', 'ETH/ERC20', 'ETH', 'Ethereum Classic', 'GRC20', 'CRC20', 'HRC20', 'NRC20', 'ARC20', 'ETHS', 'ETRC20', 'HRC20ETH', 'ARC20USDT', 'Ethereum (Proof-of-Work)', 'ETHF', 'ETHW', 'ETH2', 'ETHFAIR', 'Etherscan', 'ETHS', 'PETH', 'erc20')")
     cursor.execute("UPDATE chain SET chain = 'TRC20' WHERE chain IN ('TRON', 'TRX', 'TRC10', 'Tron (TRC20)')")
     cursor.execute(
         "UPDATE chain SET chain = 'EVM' WHERE chain IN ('TENETEVM', 'SFLEVM', 'FRA(EVM)', 'VLX(EVM)', 'ASTAREVM', 'POINTEVM', 'FIBO', 'FEVM', 'PLBEVM', 'REBUSEVM', 'TELOS(EVM)', 'SysNEVM')")
