@@ -11,13 +11,13 @@ from chain_collection.mod11_bit_get import bit_get_chain
 from chain_collection.mod12_bybit import bybit_chain
 from chain_collection.mod13_poloniex import poloniex_chain
 from chain_collection.mod14_ascend_ex import ascend_ex_chain
+from chain_collection.mod15_probit import probit_chain
 from chain_collection.mod9_l_bank import l_bank_chain
 from config.logger_config import setup_logger
 from database.db_pool import get_connection, release_connection
 from symbols_collection.mod10_bybit import bybit
 from symbols_collection.mod11_xt import xt
 from symbols_collection.mod12_hitbtc import hitbtc
-from symbols_collection.mod13_bit_mart import bit_mart
 from symbols_collection.mod14_bigone import bigone
 from symbols_collection.mod15_jubi import jubi
 from symbols_collection.mod16_la_token import la_token
@@ -31,13 +31,10 @@ from symbols_collection.mod22_digi_finex import digi_finex
 from symbols_collection.mod23_l_bank import l_bank
 from symbols_collection.mod24_bing_x import bing_x
 from symbols_collection.mod25_probit import probit
-from symbols_collection.mod26_kraken import kraken
-from symbols_collection.mod27_ku_coin import ku_coin
 from symbols_collection.mod28_poloniex import poloniex
 from symbols_collection.mod2_binance import binance
 from symbols_collection.mod3_huobi import huobi
 from symbols_collection.mod4_bit_get import bit_get
-from symbols_collection.mod5_bitfinex import bitfinex
 from symbols_collection.mod6_mexc import mexc
 from symbols_collection.mod7_bit_venus import bit_venus
 from symbols_collection.mod8_deep_coin import deep_coin
@@ -49,7 +46,6 @@ from chain_collection.mod4_mexc import mexc_chain
 from chain_collection.mod5_gate_io import gate_io_chain
 from chain_collection.mod6_digi_finex import digi_finex_chain
 from chain_collection.mod7_bing_x import bing_x_chain
-from chain_collection.mod8_ku_coin import ku_coin_chain
 
 project_root = os.path.dirname(os.path.abspath(__file__))
 logger = setup_logger("midnight_task", os.path.join(project_root, 'log', 'app.log'))
@@ -153,32 +149,34 @@ def update_symbols():
 
         okx()
         binance()
-        huobi()
         bit_get()
-        bitfinex()
         mexc()
-        bit_venus()
-        deep_coin()
-        ascend_ex()
-        bybit()
+        gate_io()
+        huobi()
         xt()
-        hitbtc()
-        # bit_mart()
+        bybit()
         bigone()
-        jubi()
+        poloniex()
+        ascend_ex()
+        digi_finex()
+        deep_coin()
+        hot_coin()
         la_token()
         coinex()
-        gate_io()
-        coin_w()
+        jubi()
+        hitbtc()
         bi_ka()
-        hot_coin()
-        digi_finex()
-        l_bank()
+        bit_venus()
         bing_x()
+        l_bank()
         probit()
+        coin_w()
+        # bitfinex()
         # kraken()
         # ku_coin()
-        poloniex()
+        # bit_mart()
+
+        cursor.execute("DELETE FROM symbols where symbol_name NOT LIKE '%USDT'")
 
         patterns_to_delete = [
             '%2L%', '%3L%', '%4L%', '%5L%', '%6L%',
@@ -196,7 +194,7 @@ def update_symbols():
 
         connection.commit()
 
-        update_stable_coin()
+        # update_stable_coin()
 
         cursor.execute("UPDATE symbols SET remark = ''")
 
@@ -223,84 +221,6 @@ def update_symbols():
         logger.error(f"An error occurred: {e}")
 
 
-def update_stable_coin():
-    start_time = time.time()
-    connection = get_connection()
-    cursor = connection.cursor()
-    cursor.execute("TRUNCATE TABLE stablecoin")
-    connection.commit()
-
-    cursor.execute(
-        "INSERT INTO stablecoin(exchange_name, symbol_name) SELECT DISTINCT 'okx' AS exchange_name, SPLIT_PART(symbol_name, '-', 2) AS symbol_name FROM SYMBOLS WHERE remark = 'okx'")
-    cursor.execute(
-        "INSERT INTO stablecoin(exchange_name, symbol_name) SELECT DISTINCT 'binance' AS exchange_name, SPLIT_PART(symbol_name, '-', 2) AS symbol_name FROM SYMBOLS WHERE remark = 'binance'")
-    cursor.execute(
-        "INSERT INTO stablecoin(exchange_name, symbol_name) SELECT DISTINCT 'huobi' AS exchange_name, SPLIT_PART(symbol_name, '-', 2) AS symbol_name FROM SYMBOLS WHERE remark = 'huobi'")
-    cursor.execute(
-        "INSERT INTO stablecoin(exchange_name, symbol_name) SELECT DISTINCT 'bitget' AS exchange_name, SPLIT_PART(symbol_name, '-', 2) AS symbol_name FROM SYMBOLS WHERE remark = 'bit_get'")
-    cursor.execute(
-        "INSERT INTO stablecoin(exchange_name, symbol_name) SELECT DISTINCT 'bitfinex' AS exchange_name, SPLIT_PART(symbol_name, '-', 2) AS symbol_name FROM SYMBOLS WHERE remark = 'bitfinex'")
-    cursor.execute(
-        "INSERT INTO stablecoin(exchange_name, symbol_name) SELECT DISTINCT 'mexc' AS exchange_name, SPLIT_PART(symbol_name, '-', 2) AS symbol_name FROM SYMBOLS WHERE remark = 'mexc'")
-    cursor.execute(
-        "INSERT INTO stablecoin(exchange_name, symbol_name) SELECT DISTINCT 'bitvenus' AS exchange_name, SPLIT_PART(symbol_name, '-', 2) AS symbol_name FROM SYMBOLS WHERE remark = 'bit_venus'")
-    cursor.execute(
-        "INSERT INTO stablecoin(exchange_name, symbol_name) SELECT DISTINCT 'deepcoin' AS exchange_name, SPLIT_PART(symbol_name, '-', 2) AS symbol_name FROM SYMBOLS WHERE remark = 'deep_coin'")
-    cursor.execute(
-        "INSERT INTO stablecoin(exchange_name, symbol_name) SELECT DISTINCT 'ascendex' AS exchange_name, SPLIT_PART(symbol_name, '-', 2) AS symbol_name FROM SYMBOLS WHERE remark = 'ascend_ex'")
-    cursor.execute(
-        "INSERT INTO stablecoin(exchange_name, symbol_name) SELECT DISTINCT 'bybit' AS exchange_name, SPLIT_PART(symbol_name, '-', 2) AS symbol_name FROM SYMBOLS WHERE remark = 'bybit'")
-    cursor.execute(
-        "INSERT INTO stablecoin(exchange_name, symbol_name) SELECT DISTINCT 'xt' AS exchange_name, SPLIT_PART(symbol_name, '-', 2) AS symbol_name FROM SYMBOLS WHERE remark = 'xt'")
-    cursor.execute(
-        "INSERT INTO stablecoin(exchange_name, symbol_name) SELECT DISTINCT 'hitbtc' AS exchange_name, SPLIT_PART(symbol_name, '-', 2) AS symbol_name FROM SYMBOLS WHERE remark = 'hitbtc'")
-    cursor.execute(
-        "INSERT INTO stablecoin(exchange_name, symbol_name) SELECT DISTINCT 'bitmart' AS exchange_name, SPLIT_PART(symbol_name, '-', 2) AS symbol_name FROM SYMBOLS WHERE remark = 'bit_mart'")
-    cursor.execute(
-        "INSERT INTO stablecoin(exchange_name, symbol_name) SELECT DISTINCT 'bigone' AS exchange_name, SPLIT_PART(symbol_name, '-', 2) AS symbol_name FROM SYMBOLS WHERE remark = 'bigone'")
-    cursor.execute(
-        "INSERT INTO stablecoin(exchange_name, symbol_name) SELECT DISTINCT 'jubi' AS exchange_name, SPLIT_PART(symbol_name, '-', 2) AS symbol_name FROM SYMBOLS WHERE remark = 'jubi'")
-    cursor.execute(
-        "INSERT INTO stablecoin(exchange_name, symbol_name) SELECT DISTINCT 'latoken' AS exchange_name, SPLIT_PART(symbol_name, '-', 2) AS symbol_name FROM SYMBOLS WHERE remark = 'la_token'")
-    cursor.execute(
-        "INSERT INTO stablecoin(exchange_name, symbol_name) SELECT DISTINCT 'coinex' AS exchange_name, SPLIT_PART(symbol_name, '-', 2) AS symbol_name FROM SYMBOLS WHERE remark = 'coinex'")
-    cursor.execute(
-        "INSERT INTO stablecoin(exchange_name, symbol_name) SELECT DISTINCT 'gateio' AS exchange_name, SPLIT_PART(symbol_name, '-', 2) AS symbol_name FROM SYMBOLS WHERE remark = 'gate_io'")
-    cursor.execute(
-        "INSERT INTO stablecoin(exchange_name, symbol_name) SELECT DISTINCT 'coinw' AS exchange_name, SPLIT_PART(symbol_name, '-', 2) AS symbol_name FROM SYMBOLS WHERE remark = 'coin_w'")
-    cursor.execute(
-        "INSERT INTO stablecoin(exchange_name, symbol_name) SELECT DISTINCT 'bika' AS exchange_name, SPLIT_PART(symbol_name, '-', 2) AS symbol_name FROM SYMBOLS WHERE remark = 'bi_ka'")
-    cursor.execute(
-        "INSERT INTO stablecoin(exchange_name, symbol_name) SELECT DISTINCT 'hotcoin' AS exchange_name, SPLIT_PART(symbol_name, '-', 2) AS symbol_name FROM SYMBOLS WHERE remark = 'hot_coin'")
-    cursor.execute(
-        "INSERT INTO stablecoin(exchange_name, symbol_name) SELECT DISTINCT 'digifinex' AS exchange_name, SPLIT_PART(symbol_name, '-', 2) AS symbol_name FROM SYMBOLS WHERE remark = 'digi_finex'")
-    cursor.execute(
-        "INSERT INTO stablecoin(exchange_name, symbol_name) SELECT DISTINCT 'lbank' AS exchange_name, SPLIT_PART(symbol_name, '-', 2) AS symbol_name FROM SYMBOLS WHERE remark = 'l_bank'")
-    cursor.execute(
-        "INSERT INTO stablecoin(exchange_name, symbol_name) SELECT DISTINCT 'bingx' AS exchange_name, SPLIT_PART(symbol_name, '-', 2) AS symbol_name FROM SYMBOLS WHERE remark = 'bing_x'")
-    cursor.execute(
-        "INSERT INTO stablecoin(exchange_name, symbol_name) SELECT DISTINCT 'probit' AS exchange_name, SPLIT_PART(symbol_name, '-', 2) AS symbol_name FROM SYMBOLS WHERE remark = 'probit'")
-    cursor.execute(
-        "INSERT INTO stablecoin(exchange_name, symbol_name) SELECT DISTINCT 'kraken' AS exchange_name, SPLIT_PART(symbol_name, '-', 2) AS symbol_name FROM SYMBOLS WHERE remark = 'kraken'")
-    cursor.execute(
-        "INSERT INTO stablecoin(exchange_name, symbol_name) SELECT DISTINCT 'kucoin' AS exchange_name, SPLIT_PART(symbol_name, '-', 2) AS symbol_name FROM SYMBOLS WHERE remark = 'kucoin'")
-    cursor.execute(
-        "INSERT INTO stablecoin(exchange_name, symbol_name) SELECT DISTINCT 'poloniex' AS exchange_name, SPLIT_PART(symbol_name, '-', 2) AS symbol_name FROM SYMBOLS WHERE remark = 'poloniex'")
-
-    cursor.execute("UPDATE stablecoin SET price = 0")
-
-    cursor.execute(
-        "UPDATE stablecoin SET price = 1 WHERE symbol_name IN ('USDT','USD','TUSD','BUSD','LUSD','USDC','USDP','DAI','PAX','XTUSD')")
-
-    cursor.execute(
-        "UPDATE stablecoin SET status = 1")
-
-    connection.commit()
-    end_time = time.time()
-    elapsed_time = round(end_time - start_time, 3)
-    logger.info(f"stable_coin table updated in {elapsed_time} seconds.")
-
-
 def update_chain():
     start_time = time.time()
     connection = get_connection()
@@ -315,45 +235,20 @@ def update_chain():
     gate_io_chain()
     digi_finex_chain()
     bing_x_chain()
-    # ku_coin_chain()
+    l_bank_chain()
     xt_chain()
     bit_get_chain()
     bybit_chain()
     poloniex_chain()
     ascend_ex_chain()
-    l_bank_chain()
+    probit_chain()
 
-    # okx
-    cursor.execute("UPDATE chain SET chain = split_part(chain, '-', 2) WHERE exchange_name = 'okx'")
-    # digifinex
-    cursor.execute("DELETE FROM chain WHERE chain = '' AND exchange_name = 'digifinex'")
+    with open('update_chains.sql', 'r') as file:
+        sql_commands = file.readlines()
 
-    cursor.execute(
-        "UPDATE chain SET chain = 'BEP20' WHERE chain IN ('BSC', 'BNB Beacon Chain (BEP2)', 'BNB Smart Chain (BEP20)', 'BNB Smart Chain', 'BNB-BEP2', 'BEP20(BSC)', 'BEP20 (BSC)', 'BSC(BEP20)', 'BSC/BEP20', 'BSC(RACAV2)', 'BSC(BEP20)', 'BNB-BEP2', 'BNB/BEP2', 'BNB', 'bep20(bsc)')")
-    cursor.execute(
-        "UPDATE chain SET chain = 'ERC20' WHERE chain IN ('Ethereum (ERC20)', 'Ethereum', 'ETH/ERC20', 'ETH', 'Ethereum Classic', 'GRC20', 'CRC20', 'HRC20', 'NRC20', 'ARC20', 'ETHS', 'ETRC20', 'HRC20ETH', 'ARC20USDT', 'Ethereum (Proof-of-Work)', 'ETHF', 'ETHW', 'ETH2', 'ETHFAIR', 'Etherscan', 'ETHS', 'PETH', 'erc20')")
-    cursor.execute("UPDATE chain SET chain = 'TRC20' WHERE chain IN ('TRON', 'TRX', 'TRC10', 'Tron (TRC20)')")
-    cursor.execute(
-        "UPDATE chain SET chain = 'EVM' WHERE chain IN ('TENETEVM', 'SFLEVM', 'FRA(EVM)', 'VLX(EVM)', 'ASTAREVM', 'POINTEVM', 'FIBO', 'FEVM', 'PLBEVM', 'REBUSEVM', 'TELOS(EVM)', 'SysNEVM')")
-    cursor.execute(
-        "UPDATE chain SET chain = 'Avalanche' WHERE chain IN ('CAVAX', 'CCHAIN', 'AVAX C-Chain', 'AVAX-CCHAIN', 'Avalanche C')")
-    cursor.execute(
-        "UPDATE chain SET chain = 'Chiliz' WHERE chain IN ('CHZ', 'Chiliz', 'chz', 'CHZ20', 'Chiliz Chain(CHZ)', 'Chiliz Legacy Chain', 'ChilizLegacyChain', 'Chiliz Legacy Chain(CHZ)')")
-    cursor.execute("UPDATE chain SET chain = 'Neo' WHERE chain IN ('Neo Legacy', 'N3', 'NEO', 'Neo N3')")
-    cursor.execute("UPDATE chain SET chain = 'Harmony' WHERE chain IN ('Harmony/HRC20', 'Harmony')")
-    cursor.execute("UPDATE chain SET chain = 'Osmosis' WHERE chain IN ('Osmosis', 'OSMO')")
-    cursor.execute(
-        "UPDATE chain SET chain = 'Bitcoin' WHERE chain IN ('BTC', 'Bitcoin SV', 'Bitcoin', 'BTC(SegWit)')")
-    cursor.execute("UPDATE chain SET chain = 'Bifrost' WHERE chain IN ('Bifrost-Polkadot', 'BIFROSTKUSAMA')")
-    cursor.execute(
-        "UPDATE chain SET chain = 'zkSync' WHERE chain IN ('ZKSYNCERA', 'zkSync Lite(v1)', 'zkSync Era')")
-    cursor.execute("UPDATE chain SET chain = 'Dog' WHERE chain IN ('DOG20', 'DogeChain', 'Dogechain')")
-    cursor.execute(
-        "UPDATE chain SET chain = 'Arbitrum' WHERE chain IN ('Arbitrum-One', 'Arbitrum Nova', 'Arbitrum One (Bridged)')")
-    cursor.execute("UPDATE chain SET chain = 'Freeton' WHERE chain IN ('FREETON', 'Ton', 'TON')")
-    cursor.execute("UPDATE chain SET chain = 'Optimism' WHERE chain IN ('VELODROME(V2)-Optimism', 'Optimism (Bridged)', 'Optimism (V2)', 'OPTIMISM', 'Optimism (Circle)')")
-    cursor.execute("UPDATE chain SET chain = 'Arbitrum One' WHERE chain IN ('ARBITRUMONE', 'ARBITRUM', 'Arbitrum', 'ArbitrumOne', 'ARBITRUMETH', 'ArbitrumNova', 'Arbitrum-One', 'Arbitrum Nova', 'ArbitrumNova', 'Arbitrum One(Bridged)', 'Arbitrum One (Bridged)', 'Arbitrum One (Circle)')")
-    cursor.execute("UPDATE chain SET chain = 'Polygon' WHERE chain IN ('POLYGON', 'Polygon (Bridged)', 'Polygon (Circle)')")
+    for command in sql_commands:
+        if command.strip():
+            cursor.execute(command)
 
     connection.commit()
     cursor.close()
@@ -361,6 +256,26 @@ def update_chain():
     end_time = time.time()
     elapsed_time = round(end_time - start_time, 3)
     logger.info(f"chain table updated in {elapsed_time} seconds.")
+
+
+def update_stable_coin():
+    start_time = time.time()
+    connection = get_connection()
+    cursor = connection.cursor()
+    cursor.execute("TRUNCATE TABLE stablecoin")
+    connection.commit()
+
+    with open('update_stable_coin.sql', 'r') as file:
+        sql_commands = file.readlines()
+
+    for command in sql_commands:
+        if command.strip():
+            cursor.execute(command)
+
+    connection.commit()
+    end_time = time.time()
+    elapsed_time = round(end_time - start_time, 3)
+    logger.info(f"stable_coin table updated in {elapsed_time} seconds.")
 
 
 def update_usd_to_others_rate():
